@@ -1,0 +1,17 @@
+{
+    "name": "Wsmallnews/laravel-shopcore",
+    "description": "shop core composer",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "smallnews",
+            "email": "1371606921@qq.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Wsmallnews\\Shopcore\\": "src/"
+        }
+    }
+}
