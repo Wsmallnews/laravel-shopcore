@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore;
 
 use Illuminate\Routing\Router;
@@ -8,17 +17,15 @@ class ShopcoreManager
 {
     public static function routes(Router $router)
     {
-
-        Route::group(['prefix' => 'sm', 'namespace' => '\Wsmallnews\Shopcore\Http\Controllers\Admin'], function($router){
+        Route::group(['prefix' => 'sm', 'namespace' => '\Wsmallnews\Shopcore\Http\Controllers\Admin'], function ($router) {
             $router->get('login', 'LoginController@login')->name('adminapi.login');    // 获取 行政区划代码
         });
 
-
-        Route::group(['prefix' => 'sm', 'namespace' => '\Wsmallnews\Shopcore\Http\Controllers\Admin'], function($router){
+        Route::group(['prefix' => 'sm', 'namespace' => '\Wsmallnews\Shopcore\Http\Controllers\Admin'], function ($router) {
             // 产品分类
             $router->resource('shopProductCategorys', 'ShopProductCategorysController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.shopProductCategorys'
+                'names' => 'adminapi.shopProductCategorys',
             ]);
 
             // 产品路由
@@ -29,15 +36,15 @@ class ShopcoreManager
             $router->patch('shopProducts/{shopProduct}/setSpecial', 'ShopProductsController@setSpecial')->name('adminapi.shopProducts.setSpecial');
             $router->patch('shopProducts/{shopProduct}/restore', 'ShopProductsController@restore')->name('adminapi.shopProducts.restore');
             $router->delete('shopProducts/{shopProduct}/forceDelete', 'ShopProductsController@forceDelete')->name('adminapi.shopProducts.forceDelete');
-            $router->resource("shopProducts", 'ShopProductsController', [
+            $router->resource('shopProducts', 'ShopProductsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                "names" => "adminapi.shopProducts"
+                'names' => 'adminapi.shopProducts',
             ]);
 
             // 地域
             $router->resource('regions', 'RegionsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.regions'
+                'names' => 'adminapi.regions',
             ]);
 
             //  销售管理
@@ -45,27 +52,27 @@ class ShopcoreManager
             $router->patch('sellers/resetPassword/{id}', 'SellersController@resetPassword')->name('adminapi.sellers.resetPassword');
             $router->resource('sellers', 'SellersController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.sellers'
+                'names' => 'adminapi.sellers',
             ]);
 
             // 机构管理
             $router->get('institutions/all', 'InstitutionsController@all')->name('adminapi.institutions.all');
             $router->resource('institutions', 'InstitutionsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.institutions'
+                'names' => 'adminapi.institutions',
             ]);
 
             // 客户管理
             $router->get('customers/info', 'CustomersController@info')->name('adminapi.customers.info');
             $router->resource('customers', 'CustomersController', [
                 'only' => ['index', 'store', 'destroy'],
-                'names' => 'adminapi.customers'
+                'names' => 'adminapi.customers',
             ]);
 
             // 业绩管理
             $router->resource('achievements', 'AchievementsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.achievements'
+                'names' => 'adminapi.achievements',
             ]);
 
             $router->get('admins/info', 'AdminsController@info')->name('adminapi.admin.info');
@@ -74,19 +81,19 @@ class ShopcoreManager
             $router->patch('admins/modifySelfPassword', 'AdminsController@modifySelfPassword')->name('adminapi.admins.modifySelfPassword');
             $router->resource('admins', 'AdminsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'adminapi.admins'
+                'names' => 'adminapi.admins',
             ]);
 
             $router->resource('adminLogs', 'AdminLogsController', [
                 'only' => ['index'],
-                'names' => 'admin.adminLogs'
+                'names' => 'admin.adminLogs',
             ]);
 
             $router->get('roles/roleAll', 'RolesController@roleAll')->name('adminapi.roles.roleAll');
             $router->post('roles/{role}/givePermissions', 'RolesController@givePermissions')->name('adminapi.roles.givePermissions');
-            $router->resource("roles", 'RolesController', [
-                'only' => ["store", "index", "show", "update", "destroy"],
-                'names' => "adminapi.roles",
+            $router->resource('roles', 'RolesController', [
+                'only' => ['store', 'index', 'show', 'update', 'destroy'],
+                'names' => 'adminapi.roles',
             ]);
 
             $router->get('permissions/adminIndex', 'PermissionsController@adminIndex')->name('adminapi.permissions.adminIndex');
@@ -95,10 +102,8 @@ class ShopcoreManager
             $router->get('permissions/create/{permission}', 'PermissionsController@create')->name('adminapi.permissions.create')->where('permission', '(admin|apimerchacc)');
             $router->resource('permissions', 'PermissionsController', [
                 'only' => ['store', 'edit', 'update', 'destroy'],
-                'names' => 'adminapi.permissions'
+                'names' => 'adminapi.permissions',
             ]);
         });
     }
-
-
 }

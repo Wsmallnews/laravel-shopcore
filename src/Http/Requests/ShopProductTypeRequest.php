@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Http\Requests;
 
 class ShopProductTypeRequest extends Request
@@ -11,13 +20,12 @@ class ShopProductTypeRequest extends Request
      */
     public function rules()
     {
-        switch($this->method())
-        {
+        switch ($this->method()) {
             // CREATE
             case 'POST':
             {
                 return [
-                    'name' => "required|unique:shop_product_types,name",
+                    'name' => 'required|unique:shop_product_types,name',
                 ];
             }
             // UPDATE
@@ -25,8 +33,9 @@ class ShopProductTypeRequest extends Request
             case 'PATCH':
             {
                 $id = $this->route('user');
+
                 return [
-                    'name' => "required|unique:shop_product_types,name,".$id,
+                    'name' => 'required|unique:shop_product_types,name,'.$id,
                 ];
             }
             case 'GET':
@@ -43,8 +52,8 @@ class ShopProductTypeRequest extends Request
     public function messages()
     {
         return [
-            'name.required' => "请填写类型名称",
-            'name.unique' => "类型名称已存在",
+            'name.required' => '请填写类型名称',
+            'name.unique' => '类型名称已存在',
         ];
     }
 }
