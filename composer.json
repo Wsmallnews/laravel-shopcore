@@ -13,7 +13,9 @@
         "guzzlehttp/guzzle": "^6.3",
         "illuminate/database": "5.5.*",
         "nesbot/carbon": "^1.24",
-        "kalnoy/nestedset": "^4.3"
+        "kalnoy/nestedset": "^4.3",
+        "illuminate/support": "5.5.*",
+        "illuminate/contracts": "5.5.*"
     },
     "autoload": {
         "psr-4": {
@@ -29,5 +31,5 @@
                 "Shopcore": "Wsmallnews\\Shopcore\\Facade"
             }
         }
-    },
+    }
 }

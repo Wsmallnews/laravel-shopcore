@@ -34,9 +34,9 @@ class Facade extends LaravelFacade
     /**
      * register routes
      */
-    public static function routes(Router $router)
+    public static function routes()
     {
-        return app('shopcore')->routes($router);
+        return app('shopcore')->routes();
     }
 
 }

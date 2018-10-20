@@ -72,7 +72,7 @@ class ShopcoreServiceProvider extends ServiceProvider
     }
 
 
-    protected function register()
+    public function register()
     {
         $this->mergeConfigFrom(
             __DIR__.'/config/config.php', 'shopcore'
