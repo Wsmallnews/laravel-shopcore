@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopProductSpecsTable extends Migration
+class CreateSmProductSpecsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateSmshopProductSpecsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_product_specs', function (Blueprint $table) {
+        Schema::create('sm_product_specs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->comment('所属商品');
             $table->string('spec_name_one')->comment('规格项 1');
@@ -32,6 +32,6 @@ class CreateSmshopProductSpecsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smshop_product_specs');
+        Schema::dropIfExists('sm_product_specs');
     }
 }

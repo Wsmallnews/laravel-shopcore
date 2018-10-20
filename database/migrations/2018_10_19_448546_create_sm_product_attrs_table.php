@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopProductAttrsTable extends Migration
+class CreateSmProductAttrsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSmshopProductAttrsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_product_attrs', function (Blueprint $table) {
+        Schema::create('sm_product_attrs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id')->comment('商品 id');
             $table->integer('attr_id')->comment('属性 id');
@@ -31,6 +31,6 @@ class CreateSmshopProductAttrsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smshop_product_attrs');
+        Schema::dropIfExists('sm_product_attrs');
     }
 }

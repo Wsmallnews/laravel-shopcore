@@ -7,7 +7,7 @@ use Wsmallnews\Shopcore\Models\ShopOrder;
 use Wsmallnews\Shopcore\Models\ShopProduct;
 use Wsmallnews\Shopcore\Models\ShopOrderItem;
 
-class ShopOrdersController extends CommonController
+class SmOrdersController extends CommonController
 {
     /**
      * Display a listing of the resource.

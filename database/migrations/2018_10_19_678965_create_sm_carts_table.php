@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopCartsTable extends Migration
+class CreateSmCartsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSmshopCartsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_carts', function (Blueprint $table) {
+        Schema::create('sm_carts', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('user_id')->comment('所属用户');
@@ -41,6 +41,6 @@ class CreateSmshopCartsTable extends Migration
      */
      public function down()
      {
-         Schema::dropIfExists('smshop_carts');
+         Schema::dropIfExists('sm_carts');
      }
 }

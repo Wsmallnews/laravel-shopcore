@@ -3,7 +3,7 @@
 namespace Wsmallnews\Shopcore\Models;
 
 
-class ShopOrderItem extends Model
+class SmOrderItem extends Model
 {
     protected $appends = [
 

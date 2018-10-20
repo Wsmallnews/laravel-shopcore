@@ -3,10 +3,11 @@
 namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Wsmallnews\Shopcore\Models\ShopProductCategory as Category;
-use Wsmallnews\Shopcore\Http\Requests\ShopProductCategoryRequest;
+use Wsmallnews\Shopcore\Models\SmCategory as Category;
+use Wsmallnews\Shopcore\Http\Requests\SmCategoryRequest;
+use Wsmallnews\Shopcore\Events\OperateLogEvent;
 
-class ShopProductCategorysController extends CommonController
+class SmCategorysController extends CommonController
 {
     /**
      * 产品分类列表
@@ -44,7 +45,7 @@ class ShopProductCategorysController extends CommonController
 
 
 
-    public function store(ShopProductCategoryRequest $request)
+    public function store(SmCategoryRequest $request)
     {
         $parent_ids = $request->input('parent_id');
         $parent_id = empty($parent_ids) ? null : $parent_ids[count($parent_ids) - 1];
@@ -60,7 +61,7 @@ class ShopProductCategorysController extends CommonController
             'type' => 'admin',
             "log_info" => "添加产品分类:".$category->name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,
@@ -76,7 +77,7 @@ class ShopProductCategorysController extends CommonController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ShopProductCategoryRequest $request, $id)
+    public function update(SmCategoryRequest $request, $id)
     {
         $parent_ids = $request->input('parent_id');
         $parent_id = empty($parent_ids) ? null : $parent_ids[count($parent_ids) - 1];
@@ -102,7 +103,7 @@ class ShopProductCategorysController extends CommonController
             'type' => 'admin',
             "log_info" => "修改产品分类:".$category->name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
         return response()->json([
             "error" => 0,
             "info" => "保存成功"
@@ -128,7 +129,7 @@ class ShopProductCategorysController extends CommonController
             'type' => 'admin',
             "log_info" => "删除产品分类:".$category_name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,

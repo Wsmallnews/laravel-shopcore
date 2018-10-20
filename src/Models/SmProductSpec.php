@@ -4,7 +4,7 @@ namespace Wsmallnews\Shopcore\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShopProductSpec extends Model
+class SmProductSpec extends Model
 {
     protected $appends = [
 

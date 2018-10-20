@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopOrderActionsTable extends Migration
+class CreateSmOrderActionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateSmshopOrderActionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_order_actions', function (Blueprint $table) {
+        Schema::create('sm_order_actions', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('order_id', 60)->comment("订单id");
@@ -42,6 +42,6 @@ class CreateSmshopOrderActionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smshop_order_actions');
+        Schema::dropIfExists('sm_order_actions');
     }
 }

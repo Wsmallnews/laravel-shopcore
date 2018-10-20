@@ -3,14 +3,15 @@
 namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use Wsmallnews\Shopcore\Http\Requests\ShopProductRequest;
-use Wsmallnews\Shopcore\Models\ShopProduct;
-use Wsmallnews\Shopcore\Models\ShopProductSpec;
-use Wsmallnews\Shopcore\Models\ShopProductAttr;
-use Wsmallnews\Shopcore\Models\ShopProductType;
+use Wsmallnews\Shopcore\Http\Requests\SmProductRequest;
+use Wsmallnews\Shopcore\Models\SmProduct;
+use Wsmallnews\Shopcore\Models\SmProductSpec;
+use Wsmallnews\Shopcore\Models\SmProductAttr;
+use Wsmallnews\Shopcore\Models\SmProductType;
+use Wsmallnews\Shopcore\Events\OperateLogEvent;
 use Carbon\Carbon;
 
-class ShopProductsController extends CommonController
+class SmProductsController extends CommonController
 {
     /**
      * 产品列表
@@ -19,11 +20,10 @@ class ShopProductsController extends CommonController
      */
     public function index(Request $request)
     {
-        $admin = $this->guard()->user();
         $name = $request->input('name', '');
         $category_id = $request->input('category_id', []);
 
-        $products = ShopProduct::with('category');
+        $products = SmProduct::with('category');
 
         if (!empty($name)) {
             $products = $products->where('name', 'like', '%'.$name."%");
@@ -45,7 +45,7 @@ class ShopProductsController extends CommonController
     // 获取所有产品
     public function all(Request $request)
     {
-        $products = ShopProduct::get();
+        $products = SmProduct::get();
 
         return response()->json([
             "error" => 0,
@@ -64,7 +64,7 @@ class ShopProductsController extends CommonController
         $name = $request->input('name', '');
         $category_id = $request->input('category_id', []);
 
-        $products = ShopProduct::onlyTrashed()->with('category');
+        $products = SmProduct::onlyTrashed()->with('category');
 
         if (!empty($name)) {
             $products = $products->where('name', 'like', '%'.$name."%");
@@ -92,7 +92,7 @@ class ShopProductsController extends CommonController
      */
     public function show($id)
     {
-        $product = ShopProduct::with('specItem', 'productAttr')->findOrFail($id);
+        $product = SmProduct::with('specItem', 'productAttr')->findOrFail($id);
 
         $spec_name = $product->getSpecName($product);
 
@@ -107,10 +107,10 @@ class ShopProductsController extends CommonController
 
     /**
      * 产品添加
-     * @param  ShopProductRequest $request [description]
+     * @param  SmProductRequest $request [description]
      * @return [type]                      [description]
      */
-    public function store(ShopProductRequest $request)
+    public function store(SmProductRequest $request)
     {
         \DB::transaction(function () use ($request) {
             $category_arr = $request->input('category_id', array());
@@ -121,10 +121,10 @@ class ShopProductsController extends CommonController
 
             $start_spec = $request->input('start_spec');
 
-            $product = new ShopProduct();
+            $product = new SmProduct();
             $product->name = $request->input('name');
             $product->category_id = $category_id;
-            $product->type = $request->input('type');
+            $product->type = $request->input('type', 'show');
             $product->is_virtual = $request->input('is_virtual');
             $product->images = json_encode($request->input('images'));
             $product->origin_price = $request->input('origin_price');
@@ -153,7 +153,7 @@ class ShopProductsController extends CommonController
             if ($start_spec) {
                 $spec_item = $request->input('spec_item');
                 foreach ($spec_item as $key => $value) {
-                    $shopProductSpec = new ShopProductSpec();
+                    $shopProductSpec = new SmProductSpec();
 
                     $shopProductSpec->product_id = $product_id;
                     $shopProductSpec->spec_name_one = !empty($value['spec_name_one']) ? $value['spec_name_one'] : '';
@@ -170,7 +170,7 @@ class ShopProductsController extends CommonController
             $type_attrs = $request->input('type_attrs');
             if(!empty($type_attrs)){
                 foreach ($type_attrs as $key => $attr) {
-                    $shopProductAttr = new ShopProductAttr();
+                    $shopProductAttr = new SmProductAttr();
                     $shopProductAttr->product_id = $product_id;
                     $shopProductAttr->attr_id = $attr['id'];
                     $shopProductAttr->attr_name = $attr['name'];
@@ -185,7 +185,7 @@ class ShopProductsController extends CommonController
             'type' => 'admin',
             "log_info" => "添加产品:".$request->input('name')
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,
@@ -198,7 +198,7 @@ class ShopProductsController extends CommonController
      * 产品修改
      * @param  int  $id
      */
-    public function update(ShopProductRequest $request, $id)
+    public function update(SmProductRequest $request, $id)
     {
         \DB::transaction(function () use ($id, $request) {
             $category_arr = $request->input('category_id');
@@ -206,10 +206,10 @@ class ShopProductsController extends CommonController
 
             $start_spec = $request->input('start_spec');
 
-            $product = ShopProduct::with('productAttr')->findOrFail($id);
+            $product = SmProduct::with('productAttr')->findOrFail($id);
             $product->name = $request->input('name');
             $product->category_id = $category_id;
-            $product->type = $request->input('type');
+            $product->type = $request->input('type', 'show');
             $product->is_virtual = $request->input('is_virtual');
             $product->images = json_encode($request->input('images'));
             $product->origin_price = $request->input('origin_price');
@@ -245,14 +245,14 @@ class ShopProductsController extends CommonController
 
                 if ($request->input('is_reset_spec')) {
                     // 删除之前规格项
-                    ShopProductSpec::where('product_id', $product_id)->delete();
+                    SmProductSpec::where('product_id', $product_id)->delete();
                 }
 
                 foreach ($spec_item as $key => $value) {
-                    $id = isset($value['id']) ? $value['id'] : '';
-                    $shopProductSpec = ShopProductSpec::where('id', $id)->where('product_id', $product_id)->first();
+                    $id = isset($value['id']) ? $value['id'] : 0;
+                    $shopProductSpec = SmProductSpec::where('product_id', $product_id)->find($id);
                     if (!$shopProductSpec) {
-                        $shopProductSpec = new ShopProductSpec();
+                        $shopProductSpec = new SmProductSpec();
                     }
 
                     $shopProductSpec->product_id = $product_id;
@@ -271,12 +271,12 @@ class ShopProductsController extends CommonController
                 $type_attrs = $request->input('type_attrs');
                 foreach ($type_attrs as $key => $attr) {
                     if(isset($attr['product_attr_id']) && $attr['product_attr_id']){
-                        $shopProductAttr = ShopProductAttr::where('id', $attr['product_attr_id'])
+                        $shopProductAttr = SmProductAttr::where('id', $attr['product_attr_id'])
                                             ->where('attr_id', $attr['id'])
                                             ->where('product_id', $product_id)
                                             ->first();
                     }else {
-                        $shopProductAttr = new ShopProductAttr();
+                        $shopProductAttr = new SmProductAttr();
                     }
 
                     $shopProductAttr->product_id = $product_id;
@@ -286,11 +286,11 @@ class ShopProductsController extends CommonController
                     $shopProductAttr->save();
                 }
 
-                $productType = ShopProductType::with('shopProductTypeAttr')->where('id', $product->type_id)->first();
+                $productType = SmProductType::with('shopProductTypeAttr')->where('id', $product->type_id)->first();
 
                 if ($productType && !$productType->shopProductTypeAttr->isEmpty()) {
                     $attrIds = array_column($productType->shopProductTypeAttr->toArray(), 'id');
-                    ShopProductAttr::where('product_id', $product_id)->whereNotIn('attr_id', $attrIds)->delete();
+                    SmProductAttr::where('product_id', $product_id)->whereNotIn('attr_id', $attrIds)->delete();
                 }
             }
         });
@@ -299,7 +299,7 @@ class ShopProductsController extends CommonController
             'type' => 'admin',
             "log_info" => "编辑产品:".$request->input('name')
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
         return response()->json([
             "error" => 0,
             "info" => "保存成功"
@@ -309,7 +309,7 @@ class ShopProductsController extends CommonController
 
     public function setOnSale(Request $request, $id)
     {
-        $product = ShopProduct::findOrFail($id);
+        $product = SmProduct::findOrFail($id);
 
         $product->is_on_sale = $request->input('is_on_sale', 0);
         $product->save();
@@ -319,7 +319,7 @@ class ShopProductsController extends CommonController
             'type' => 'admin',
             "log_info" => "设置产品:".$product->name.$on_sale
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
         return response()->json([
             "error" => 0,
             "info" => "操作成功"
@@ -329,7 +329,7 @@ class ShopProductsController extends CommonController
 
     public function setRecommend(Request $request, $id)
     {
-        $product = ShopProduct::findOrFail($id);
+        $product = SmProduct::findOrFail($id);
         $product->is_recommend = $request->input('is_recommend', 0);
         $product->save();
 
@@ -338,7 +338,7 @@ class ShopProductsController extends CommonController
             'type' => 'admin',
             "log_info" => "设置产品:".$product->name.$is_rec
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,
@@ -349,16 +349,16 @@ class ShopProductsController extends CommonController
 
     public function setSpecial(Request $request, $id)
     {
-        $product = ShopProduct::findOrFail($id);
+        $product = SmProduct::findOrFail($id);
         $product->is_special = $request->input('is_special', 0);
         $product->save();
 
         $is_spec = $request->input('is_special') == 0 ? "取消特价" : "特价";
         $data = array(
             'type' => 'admin',
-            "log_info" => "设置产品".$product->name.$is_spec
+            "log_info" => "设置产品:".$product->name.$is_spec
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,
@@ -369,34 +369,34 @@ class ShopProductsController extends CommonController
 
     public function destroy($id)
     {
-        $product = ShopProduct::findOrFail($id);
+        $product = SmProduct::findOrFail($id);
 
         $product_name = $product->name;
         $product->delete();
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "删除产品:".$product_name
+            "log_info" => "回收产品:".$product_name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,
-            "info" => "删除成功"
+            "info" => "回收成功"
         ]);
     }
 
 
     public function restore($id)
     {
-        $product = ShopProduct::onlyTrashed()->findOrFail($id);
+        $product = SmProduct::onlyTrashed()->findOrFail($id);
         $product->restore();    // 恢复
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "恢复删除产品:".$product->name
+            "log_info" => "恢复产品:".$product->name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
         return response()->json([
             "error" => 0,
             "info" => "恢复成功"
@@ -406,16 +406,16 @@ class ShopProductsController extends CommonController
 
     public function forceDelete($id)
     {
-        $product = ShopProduct::onlyTrashed()->findOrFail($id);
+        $product = SmProduct::onlyTrashed()->findOrFail($id);
         $product_name = $product->name;
 
         $product->forceDelete();    // 强制删除
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "强制删除产品".$product_name
+            "log_info" => "彻底删除产品:".$product_name
         );
-        \Event::fire(new \App\Events\OperateLogEvent($data));
+        \Event::fire(new OperateLogEvent($data));
 
         return response()->json([
             "error" => 0,

@@ -4,7 +4,7 @@ namespace Wsmallnews\Shopcore\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShopCart extends Model
+class SmCart extends Model
 {
 
     public function shopCartData($user_id = "", $cart_ids = array()){

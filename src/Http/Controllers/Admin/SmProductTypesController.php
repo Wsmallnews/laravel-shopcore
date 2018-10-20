@@ -5,7 +5,7 @@ namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Wsmallnews\Shopcore\Models\ShopProductType;
 
-class ShopProductTypesController extends CommonController
+class SmProductTypesController extends CommonController
 {
     /**
      * Display a listing of the resource.

@@ -43,22 +43,22 @@ class RouteRegistrar
     {
         $this->router->group(['prefix' => 'smadmin', 'namespace' => 'Admin'], function($router){
             // 产品分类
-            $router->resource('shopProductCategorys', 'ShopProductCategorysController', [
+            $router->resource('smCategorys', 'SmCategorysController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'smadmin.shopProductCategorys'
+                'names' => 'smadmin.smCategorys'
             ]);
 
             // 产品路由
-            $router->get('shopProducts/all', 'ShopProductsController@all')->name('smadmin.shopProducts.all');
-            $router->get('shopProducts/trashIndex', 'ShopProductsController@trashIndex')->name('smadmin.shopProducts.trashIndex');
-            $router->patch('shopProducts/{shopProduct}/setOnSale', 'ShopProductsController@setOnSale')->name('smadmin.shopProducts.setOnSale');
-            $router->patch('shopProducts/{shopProduct}/setRecommend', 'ShopProductsController@setRecommend')->name('smadmin.shopProducts.setRecommend');
-            $router->patch('shopProducts/{shopProduct}/setSpecial', 'ShopProductsController@setSpecial')->name('smadmin.shopProducts.setSpecial');
-            $router->patch('shopProducts/{shopProduct}/restore', 'ShopProductsController@restore')->name('smadmin.shopProducts.restore');
-            $router->delete('shopProducts/{shopProduct}/forceDelete', 'ShopProductsController@forceDelete')->name('smadmin.shopProducts.forceDelete');
-            $router->resource("shopProducts", 'ShopProductsController', [
+            $router->get('smProducts/all', 'SmProductsController@all')->name('smadmin.smProducts.all');
+            $router->get('smProducts/trashIndex', 'SmProductsController@trashIndex')->name('smadmin.smProducts.trashIndex');
+            $router->patch('smProducts/{shopProduct}/setOnSale', 'SmProductsController@setOnSale')->name('smadmin.smProducts.setOnSale');
+            $router->patch('smProducts/{shopProduct}/setRecommend', 'SmProductsController@setRecommend')->name('smadmin.smProducts.setRecommend');
+            $router->patch('smProducts/{shopProduct}/setSpecial', 'SmProductsController@setSpecial')->name('smadmin.smProducts.setSpecial');
+            $router->patch('smProducts/{shopProduct}/restore', 'SmProductsController@restore')->name('smadmin.smProducts.restore');
+            $router->delete('smProducts/{shopProduct}/forceDelete', 'SmProductsController@forceDelete')->name('smadmin.smProducts.forceDelete');
+            $router->resource("smProducts", 'SmProductsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                "names" => "smadmin.shopProducts"
+                "names" => "smadmin.smProducts"
             ]);
         });
     }

@@ -5,10 +5,10 @@ namespace Wsmallnews\Shopcore\Models;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\NodeTrait;
 
-class ShopProductCategory extends Model
+class SmCategory extends Model
 {
     use NodeTrait;
-    protected $table = 'shop_product_categorys';
+    protected $table = 'sm_categorys';
 
     protected $appends = [
         'value', 'label', 'expand', 'parent_ids'

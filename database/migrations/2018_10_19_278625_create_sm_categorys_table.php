@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopProductCategorysTable extends Migration
+class CreateSmCategorysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSmshopProductCategorysTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_product_categorys', function (Blueprint $table) {
+        Schema::create('sm_categorys', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id')->comment('总管理后台添加商城商品分类');
             $table->string('name')->comment('商品分类名称');
@@ -31,6 +31,6 @@ class CreateSmshopProductCategorysTable extends Migration
      */
      public function down()
      {
-         Schema::dropIfExists('smshop_product_categorys');
+         Schema::dropIfExists('sm_categorys');
      }
 }

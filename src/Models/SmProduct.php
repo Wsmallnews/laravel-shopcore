@@ -6,16 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Exceptions\MyException;
 
-class ShopProduct extends Model
+class SmProduct extends Model
 {
     use SoftDeletes;
-
-    public function deskapiWhere(){
-        $deskapiwhere = $this->where("check_status", 1)
-                    ->where('is_on_sale', 1);
-
-        return $deskapiwhere;
-    }
 
     protected $appends = [
         'cart_num', 'type_name', 'images_arr', 'image', 'content_arr',
@@ -24,6 +17,7 @@ class ShopProduct extends Model
     ];
 
 
+    /**********通用模型操作方法***********/
     public function getSpecName($product) {
         $spec_name = [
             [ 'spec_name' => '', 'item' => [] ],
@@ -57,7 +51,7 @@ class ShopProduct extends Model
         }
         return $spec_name;
     }
-
+    /**********通用模型操作方法***********/
 
 
     /**********访问器开始***********/
@@ -76,8 +70,8 @@ class ShopProduct extends Model
     // 产品类型
     public function getTypeNameAttribute(){
         switch ($this->type) {
-            case 'coupon' :
-                $type_name = "核销券";
+            case 'show' :
+                $type_name = "普通";
                 break;
             default:
                 $type_name = "普通";
@@ -90,8 +84,7 @@ class ShopProduct extends Model
     public function getImageAttribute(){
         $images_arr = empty($this->images) ? [] : json_decode($this->images, true) ;
 
-        return $images_arr[0];
-
+        return !empty($images_arr) ? $images_arr[0] : '';
     }
 
     public function getImagesArrAttribute(){
@@ -113,7 +106,7 @@ class ShopProduct extends Model
             if (isset($this->category) && !is_null($this->category)) {
                 $cagetory_ids = $this->category->ancestorsAndSelf($this->category_id)->pluck('id');
             } else {
-                $category = new ShopProductCategory();
+                $category = new SmCategory();
                 $cagetory_ids = $category->ancestorsAndSelf($this->category_id)->pluck('id');
             }
 
@@ -163,37 +156,27 @@ class ShopProduct extends Model
     /**********访问器结束***********/
 
 
+    /**********模型关联***********/
     public function category() {
-        return $this->belongsTo('App\Models\ShopProductCategory', "category_id");
+        return $this->belongsTo('Wsmallnews\Shopcore\Models\SmCategory', "category_id");
     }
-
-    public function merch() {
-        return $this->belongsTo('App\Models\Merch', "merch_id");
-    }
-
-    // public function cart() {
-    //     return $this->hasOne('App\Models\ShopCart', "product_id");
-    // }
-
 
     // 关联规格
     public function specItem() {
-        return $this->hasMany('App\Models\ShopProductSpec', 'product_id');
+        return $this->hasMany('Wsmallnews\Shopcore\Models\SmProductSpec', 'product_id');
     }
 
     // 关联属性
     public function productAttr() {
-        return $this->hasMany('App\Models\ShopProductAttr', 'product_id');
+        return $this->hasMany('Wsmallnews\Shopcore\Models\SmProductAttr', 'product_id');
     }
 
     // 关联收藏
     public function collection() {
-        return $this->hasOne('App\Models\Collection', 'item_id');
+        return $this->hasOne('Wsmallnews\Shopcore\Models\Collection', 'item_id');
     }
-
-
-
     //=====================模型关联结束=========================//
+
     /**
      * 商品详情进入确认订单获取产品信息
      * @param  string $product_id      [description]
@@ -202,59 +185,59 @@ class ShopProduct extends Model
      * @param  string $spec_name_three [description]
      * @return [type]                  [description]
      */
-    public function shopProductInfo($product_id = "", $spec_name_one = "", $spec_name_two = "", $spec_name_three = ""){
-        $shopProduct = $this->with("merch")->findOrFail($product_id);
-
-        $shopProductSpec = ShopProductSpec::where("product_id", $product_id);
-        if($spec_name_one){
-            $shopProductSpec = $shopProductSpec->where("spec_name_one", $spec_name_one);
-        }
-        if($spec_name_two){
-            $shopProductSpec = $shopProductSpec->where("spec_name_two", $spec_name_two);
-        }
-        if($spec_name_three){
-            $shopProductSpec = $shopProductSpec->where("spec_name_three", $spec_name_three);
-        }
-        $shopProductSpec = $shopProductSpec->first();
-        if($shopProductSpec){
-            $shopProduct->spec_name_one = $shopProductSpec->spec_name_one;
-            $shopProduct->spec_name_two = $shopProductSpec->spec_name_two;
-            $shopProduct->spec_name_three = $shopProductSpec->spec_name_three;
-            $shopProduct->origin_price = $shopProductSpec->origin_price;
-            $shopProduct->price = $shopProductSpec->price;
-        }
-
-        return $shopProduct;
-    }
-
-    /**
-     * 减库存
-     * @param  [type]  $info [description]
-     * @param  integer $num  [description]
-     * @return [type]        [description]
-     */
-    public function stockChange($info){
-        $shopProduct = $this->find($info->product_id);
-        if($shopProduct->is_virtual){
-            if($shopProduct->stock >= $info->product_num){
-                $shopProduct->stock = $shopProduct->stock - $info->product_num;
-                $shopProduct->save();
-            }else{
-                throw (new MyException)->setMessage($cartInfo->product_name."库存不足，下单失败", 2911);
-            }
-        }else{
-            $shopProductSpec = new ShopProductSpec();
-            $shopProductSpec = $shopProductSpec->shopProductSpec($info);
-            if($shopProductSpec){
-                if($shopProductSpec->stock >= $info->product_num){
-                    $shopProductSpec->stock = $shopProductSpec->stock - $info->product_num;
-                    $shopProductSpec->save();
-                }else{
-                    throw (new MyException)->setMessage($cartInfo->product_name."库存不足，下单失败", 2912);
-                }
-            }
-        }
-    }
+    // public function shopProductInfo($product_id = "", $spec_name_one = "", $spec_name_two = "", $spec_name_three = ""){
+    //     $shopProduct = $this->with("merch")->findOrFail($product_id);
+    //
+    //     $shopProductSpec = ShopProductSpec::where("product_id", $product_id);
+    //     if($spec_name_one){
+    //         $shopProductSpec = $shopProductSpec->where("spec_name_one", $spec_name_one);
+    //     }
+    //     if($spec_name_two){
+    //         $shopProductSpec = $shopProductSpec->where("spec_name_two", $spec_name_two);
+    //     }
+    //     if($spec_name_three){
+    //         $shopProductSpec = $shopProductSpec->where("spec_name_three", $spec_name_three);
+    //     }
+    //     $shopProductSpec = $shopProductSpec->first();
+    //     if($shopProductSpec){
+    //         $shopProduct->spec_name_one = $shopProductSpec->spec_name_one;
+    //         $shopProduct->spec_name_two = $shopProductSpec->spec_name_two;
+    //         $shopProduct->spec_name_three = $shopProductSpec->spec_name_three;
+    //         $shopProduct->origin_price = $shopProductSpec->origin_price;
+    //         $shopProduct->price = $shopProductSpec->price;
+    //     }
+    //
+    //     return $shopProduct;
+    // }
+    //
+    // /**
+    //  * 减库存
+    //  * @param  [type]  $info [description]
+    //  * @param  integer $num  [description]
+    //  * @return [type]        [description]
+    //  */
+    // public function stockChange($info){
+    //     $shopProduct = $this->find($info->product_id);
+    //     if($shopProduct->is_virtual){
+    //         if($shopProduct->stock >= $info->product_num){
+    //             $shopProduct->stock = $shopProduct->stock - $info->product_num;
+    //             $shopProduct->save();
+    //         }else{
+    //             throw (new MyException)->setMessage($cartInfo->product_name."库存不足，下单失败", 2911);
+    //         }
+    //     }else{
+    //         $shopProductSpec = new ShopProductSpec();
+    //         $shopProductSpec = $shopProductSpec->shopProductSpec($info);
+    //         if($shopProductSpec){
+    //             if($shopProductSpec->stock >= $info->product_num){
+    //                 $shopProductSpec->stock = $shopProductSpec->stock - $info->product_num;
+    //                 $shopProductSpec->save();
+    //             }else{
+    //                 throw (new MyException)->setMessage($cartInfo->product_name."库存不足，下单失败", 2912);
+    //             }
+    //         }
+    //     }
+    // }
 
 
 }

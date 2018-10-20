@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopOrdersTable extends Migration
+class CreateSmOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSmshopOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_orders', function (Blueprint $table) {
+        Schema::create('sm_orders', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('public_code')->nullable()->comment("商城订单拆单情况公共订单号");
@@ -71,6 +71,6 @@ class CreateSmshopOrdersTable extends Migration
      */
      public function down()
      {
-         Schema::dropIfExists('smshop_orders');
+         Schema::dropIfExists('sm_orders');
      }
 }

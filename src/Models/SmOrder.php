@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
-class ShopOrder extends Model
+class SmOrder extends Model
 {
     use SoftDeletes;
 

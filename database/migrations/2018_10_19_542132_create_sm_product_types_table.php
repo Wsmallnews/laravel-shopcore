@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSmshopProductTypesTable extends Migration
+class CreateSmProductTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +12,7 @@ class CreateSmshopProductTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('smshop_product_types', function (Blueprint $table) {
+        Schema::create('sm_product_types', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->comment('商品类型名称');
             $table->timestamps();
@@ -26,6 +26,6 @@ class CreateSmshopProductTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('smshop_product_types');
+        Schema::dropIfExists('sm_product_types');
     }
 }

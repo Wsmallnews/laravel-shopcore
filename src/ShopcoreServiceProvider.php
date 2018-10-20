@@ -33,7 +33,7 @@ class ShopcoreServiceProvider extends ServiceProvider
     {
 
         $this->publishes([
-            __DIR__.'/config/config.php' => config_path('shopcore.php'),
+            __DIR__.'/../config/config.php' => config_path('shopcore.php'),
         ], 'shopcore-config');
 
         // 数据迁移文件
@@ -44,9 +44,16 @@ class ShopcoreServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/shopcore'),
         ], 'shopcore-views');
 
+        // 发布 vue 组件
         $this->publishes([
             __DIR__.'/../resources/assets/js/components' => resource_path('assets/js/components/shopcore'),
         ], 'shopcore-components');
+
+        // 发布 操作日志 事件监听器
+        $this->publishes([
+            __DIR__.'/../listeners/OperateLogListener.php' => app_path('Listeners/OperateLogListener.php'),
+        ], 'shopcore-operloglistener');
+
 
         // $this->loadViewsFrom(__DIR__.'/../resources/views', 'passport');
         //
@@ -75,7 +82,7 @@ class ShopcoreServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/config/config.php', 'shopcore'
+            __DIR__.'/../config/config.php', 'shopcore'
         );
 
         $this->app->singleton("shopcore", function ($app) {

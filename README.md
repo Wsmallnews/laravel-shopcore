@@ -12,7 +12,16 @@ Shop core code package is being developed. Please look forward to it
 $ composer require /smallnews/laravel-shopcore -vvv
 ```
 
+## register routes
+```
+在 AppServiceProvider 的 boot 方法加入 Shopcore::routes(); 注册 shopcore 路由
+
+Shopcore::routes();
+```
+
+
 ## publish
+
 
 ```
 数据迁移
@@ -26,6 +35,11 @@ php artisan vendor:publish --tag=shopcore-views
 
 发布组件
 php artisan vendor:publish --tag=shopcore-components
+
+
+所有操作都触发了 Wsmallnews\Shopcore\Events\OperateLogEvent,您可以监听该事件完成操作日志的记录，可以用下面方法将监听器示例发布到应用中作为完成日志记录的参考
+发布事件监听
+php artisan vendor:publish --tag=shopcore-operloglistener
 ```
 
 ## Usage

@@ -1,8 +1,10 @@
 <?php
 
 namespace Wsmallnews\Shopcore\Http\Requests;
+
 use Route;
-class ShopProductCategoryRequest extends Request
+
+class SmCategoryRequest extends Request
 {
     public function rules()
     {
