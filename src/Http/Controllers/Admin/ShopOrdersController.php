@@ -1,80 +1,88 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Wsmallnews\Shopcore\Models\ShopOrder;
-use Wsmallnews\Shopcore\Models\ShopProduct;
-use Wsmallnews\Shopcore\Models\ShopOrderItem;
 
 class ShopOrdersController extends CommonController
 {
     /**
      * Display a listing of the resource.
-     * 订单列表
+     * 订单列表.
+     *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
         $merch = $this->guard()->user();
-        $shopOrders = ShopOrder::with('user', "orderItem")
+        $shopOrders = ShopOrder::with('user', 'orderItem')
                     ->where('merch_id', $merch->id);
 
-        if($request->input('order_type') == "no_pay"){              //no_pay未付款和付款中订单
+        if ('no_pay' == $request->input('order_type')) {              //no_pay未付款和付款中订单
             $shopOrders = $shopOrders->whereIn('is_pay', [0, 1]);
-        }else if($request->input('order_type') == "no_send"){       //no_send未发货订单
+        } elseif ('no_send' == $request->input('order_type')) {       //no_send未发货订单
             $shopOrders = $shopOrders->where('is_pay', 2)
                                     ->where('is_send', 0);
-        }else if($request->input('order_type') == "no_get"){        //no_get待收货订单
+        } elseif ('no_get' == $request->input('order_type')) {        //no_get待收货订单
             $shopOrders = $shopOrders->where('is_pay', 2)
                                     ->where('is_send', 1)
                                     ->where('is_get', 0);
-        }else if($request->input('order_type') == "is_finish"){        //is_finish已完成订单
+        } elseif ('is_finish' == $request->input('order_type')) {        //is_finish已完成订单
             $shopOrders = $shopOrders->where('is_pay', 2)
                                     ->where('is_send', 1)
                                     ->where('is_get', 1);
         }
 
-        if($request->has("name") && $request->input('name')){
-            $user_ids = array_column(User::where("name", "like", "%".$request->input('name')."%")->get()->toArray(), 'id');
-            $shopOrders = $shopOrders->whereIn("user_id", $user_ids);
+        if ($request->has('name') && $request->input('name')) {
+            $user_ids = array_column(User::where('name', 'like', '%'.$request->input('name').'%')->get()->toArray(), 'id');
+            $shopOrders = $shopOrders->whereIn('user_id', $user_ids);
         }
 
-        if($request->has("type") && $request->input('type') != "all"){
-            $shopOrders = $shopOrders->where("type", $request->input('type'));
+        if ($request->has('type') && 'all' != $request->input('type')) {
+            $shopOrders = $shopOrders->where('type', $request->input('type'));
         }
 
-        if($request->has("pay_type") && $request->input('pay_type')!= "all"){
-            $shopOrders = $shopOrders->where("pay_type", $request->input('pay_type'));
+        if ($request->has('pay_type') && 'all' != $request->input('pay_type')) {
+            $shopOrders = $shopOrders->where('pay_type', $request->input('pay_type'));
         }
 
         $created_at_start = $request->input('dateRange')[0];
         $created_at_end = $request->input('dateRange')[1];
-        if(!empty($request->input('dateRange')) && ($created_at_start != "null" && $created_at_end != "null")  ){
+        if (!empty($request->input('dateRange')) && ('null' != $created_at_start && 'null' != $created_at_end)) {
             $shopOrders = $shopOrders->whereBetween('created_at', [$created_at_start, $created_at_end]);
         }
 
         $shopOrders = $shopOrders->paginate($request->input('page_size', 10));
 
-
         return response()->json([
-            "error" => 0,
-            "info" => "订单列表查询成功",
-            "result" => $shopOrders
+            'error' => 0,
+            'info' => '订单列表查询成功',
+            'result' => $shopOrders,
         ]);
     }
 
-
     /**
      * Display the specified resource.
-     * 商户端订单详情
-     * @param  int  $id
+     * 商户端订单详情.
+     *
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
         $merch = $this->guard()->user();
-        $shopOrder = ShopOrder::with('user', "orderItem")
+        $shopOrder = ShopOrder::with('user', 'orderItem')
                     ->where('merch_id', $merch->id)
                     ->findOrFail($id);
 
@@ -90,12 +98,10 @@ class ShopOrdersController extends CommonController
         $data['order_product_num'] = $order_product_num;
 
         return response()->json([
-            "error" => 0,
-            "info" => "订单信息查询成功",
-            "result" => $shopOrder,
-            "data" => $data
+            'error' => 0,
+            'info' => '订单信息查询成功',
+            'result' => $shopOrder,
+            'data' => $data,
         ]);
     }
-
-
 }

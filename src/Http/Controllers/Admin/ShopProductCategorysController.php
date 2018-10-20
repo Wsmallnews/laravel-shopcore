@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
@@ -9,9 +18,11 @@ use Wsmallnews\Shopcore\Http\Requests\ShopProductCategoryRequest;
 class ShopProductCategorysController extends CommonController
 {
     /**
-     * 产品分类列表
-     * @param  [type] $id [description]
-     * @return [type]     [description]
+     * 产品分类列表.
+     *
+     * @param [type] $id [description]
+     *
+     * @return [type] [description]
      */
     public function index(Request $request)
     {
@@ -24,11 +35,11 @@ class ShopProductCategorysController extends CommonController
         ]);
     }
 
-
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -36,13 +47,11 @@ class ShopProductCategorysController extends CommonController
         $category = Category::findOrFail($id);
 
         return response()->json([
-            "error" => 0,
-            "info" => "获取成功",
-            "result" => $category,
+            'error' => 0,
+            'info' => '获取成功',
+            'result' => $category,
         ]);
     }
-
-
 
     public function store(ShopProductCategoryRequest $request)
     {
@@ -58,22 +67,23 @@ class ShopProductCategorysController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "添加产品分类:".$category->name
+            'log_info' => '添加产品分类:'.$category->name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "保存成功"
+            'error' => 0,
+            'info' => '保存成功',
         ]);
     }
 
-
     /**
      * Update the specified resource in storage.
-     * 商家信息修改
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * 商家信息修改.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int                      $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(ShopProductCategoryRequest $request, $id)
@@ -100,15 +110,15 @@ class ShopProductCategorysController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "修改产品分类:".$category->name
+            'log_info' => '修改产品分类:'.$category->name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
+
         return response()->json([
-            "error" => 0,
-            "info" => "保存成功"
+            'error' => 0,
+            'info' => '保存成功',
         ]);
     }
-
 
     public function destroy($id)
     {
@@ -116,8 +126,8 @@ class ShopProductCategorysController extends CommonController
 
         if (!$category->product->isEmpty() || !$category->descendants->isEmpty()) {
             return response()->json([
-                "error" => 2801,
-                "info" => "分类下有子分类或产品，不可删除"
+                'error' => 2801,
+                'info' => '分类下有子分类或产品，不可删除',
             ]);
         }
 
@@ -126,13 +136,13 @@ class ShopProductCategorysController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "删除产品分类:".$category_name
+            'log_info' => '删除产品分类:'.$category_name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "删除成功"
+            'error' => 0,
+            'info' => '删除成功',
         ]);
     }
 }

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
@@ -8,14 +17,15 @@ use Wsmallnews\Shopcore\Models\ShopProduct;
 use Wsmallnews\Shopcore\Models\ShopProductSpec;
 use Wsmallnews\Shopcore\Models\ShopProductAttr;
 use Wsmallnews\Shopcore\Models\ShopProductType;
-use Carbon\Carbon;
 
 class ShopProductsController extends CommonController
 {
     /**
-     * 产品列表
-     * @param  [type] $id [description]
-     * @return [type]     [description]
+     * 产品列表.
+     *
+     * @param [type] $id [description]
+     *
+     * @return [type] [description]
      */
     public function index(Request $request)
     {
@@ -26,7 +36,7 @@ class ShopProductsController extends CommonController
         $products = ShopProduct::with('category');
 
         if (!empty($name)) {
-            $products = $products->where('name', 'like', '%'.$name."%");
+            $products = $products->where('name', 'like', '%'.$name.'%');
         }
 
         if (!empty($category_id)) {
@@ -35,12 +45,11 @@ class ShopProductsController extends CommonController
         $products = $products->paginate($request->input('page_size', 10));
 
         return response()->json([
-            "error" => 0,
-            "info" => "获取成功",
-            "result" => $products
+            'error' => 0,
+            'info' => '获取成功',
+            'result' => $products,
         ]);
     }
-
 
     // 获取所有产品
     public function all(Request $request)
@@ -48,16 +57,18 @@ class ShopProductsController extends CommonController
         $products = ShopProduct::get();
 
         return response()->json([
-            "error" => 0,
-            "info" => "产品列表",
-            "result" => $products
+            'error' => 0,
+            'info' => '产品列表',
+            'result' => $products,
         ]);
     }
 
     /**
-     * 产品回收站
-     * @param  [type] $id [description]
-     * @return [type]     [description]
+     * 产品回收站.
+     *
+     * @param [type] $id [description]
+     *
+     * @return [type] [description]
      */
     public function trashIndex(Request $request)
     {
@@ -67,7 +78,7 @@ class ShopProductsController extends CommonController
         $products = ShopProduct::onlyTrashed()->with('category');
 
         if (!empty($name)) {
-            $products = $products->where('name', 'like', '%'.$name."%");
+            $products = $products->where('name', 'like', '%'.$name.'%');
         }
 
         if (!empty($category_id)) {
@@ -77,17 +88,17 @@ class ShopProductsController extends CommonController
         $products = $products->paginate($request->input('page_size', 10));
 
         return response()->json([
-            "error" => 0,
-            "info" => "获取成功",
-            "result" => $products
+            'error' => 0,
+            'info' => '获取成功',
+            'result' => $products,
         ]);
     }
-
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -97,26 +108,27 @@ class ShopProductsController extends CommonController
         $spec_name = $product->getSpecName($product);
 
         return response()->json([
-            "error" => 0,
-            "info" => "获取成功",
-            "result" => $product,
-            "spec_name" => $spec_name       // 产品编辑使用
+            'error' => 0,
+            'info' => '获取成功',
+            'result' => $product,
+            'spec_name' => $spec_name,       // 产品编辑使用
         ]);
     }
 
-
     /**
-     * 产品添加
-     * @param  ShopProductRequest $request [description]
-     * @return [type]                      [description]
+     * 产品添加.
+     *
+     * @param ShopProductRequest $request [description]
+     *
+     * @return [type] [description]
      */
     public function store(ShopProductRequest $request)
     {
         \DB::transaction(function () use ($request) {
             $category_arr = $request->input('category_id', array());
             $category_id = 0;
-            if(!empty($category_arr)){
-                $category_id = $category_arr[count($category_arr)-1];
+            if (!empty($category_arr)) {
+                $category_id = $category_arr[count($category_arr) - 1];
             }
 
             $start_spec = $request->input('start_spec');
@@ -137,7 +149,7 @@ class ShopProductsController extends CommonController
             $product->is_recommend = $request->input('is_recommend');
             $product->is_special = $request->input('is_special');
             $product->sort_order = $request->input('sort_order');
-            $product->type_id = $request->input('type_id') == "" ? 0 : $request->input('type_id');
+            $product->type_id = '' == $request->input('type_id') ? 0 : $request->input('type_id');
             $product->stock_time = $request->input('stock_time');
             $product->check_status = 1;         // 总后台产品默认不需要审核
 
@@ -168,7 +180,7 @@ class ShopProductsController extends CommonController
             }
 
             $type_attrs = $request->input('type_attrs');
-            if(!empty($type_attrs)){
+            if (!empty($type_attrs)) {
                 foreach ($type_attrs as $key => $attr) {
                     $shopProductAttr = new ShopProductAttr();
                     $shopProductAttr->product_id = $product_id;
@@ -183,26 +195,26 @@ class ShopProductsController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "添加产品:".$request->input('name')
+            'log_info' => '添加产品:'.$request->input('name'),
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "保存成功"
+            'error' => 0,
+            'info' => '保存成功',
         ]);
     }
 
-
     /**
-     * 产品修改
-     * @param  int  $id
+     * 产品修改.
+     *
+     * @param int $id
      */
     public function update(ShopProductRequest $request, $id)
     {
         \DB::transaction(function () use ($id, $request) {
             $category_arr = $request->input('category_id');
-            $category_id = $category_arr[count($category_arr)-1];
+            $category_id = $category_arr[count($category_arr) - 1];
 
             $start_spec = $request->input('start_spec');
 
@@ -267,15 +279,15 @@ class ShopProductsController extends CommonController
                 }
             }
 
-            if($request->input('type_attrs')){
+            if ($request->input('type_attrs')) {
                 $type_attrs = $request->input('type_attrs');
                 foreach ($type_attrs as $key => $attr) {
-                    if(isset($attr['product_attr_id']) && $attr['product_attr_id']){
+                    if (isset($attr['product_attr_id']) && $attr['product_attr_id']) {
                         $shopProductAttr = ShopProductAttr::where('id', $attr['product_attr_id'])
                                             ->where('attr_id', $attr['id'])
                                             ->where('product_id', $product_id)
                                             ->first();
-                    }else {
+                    } else {
                         $shopProductAttr = new ShopProductAttr();
                     }
 
@@ -297,15 +309,15 @@ class ShopProductsController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "编辑产品:".$request->input('name')
+            'log_info' => '编辑产品:'.$request->input('name'),
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
+
         return response()->json([
-            "error" => 0,
-            "info" => "保存成功"
+            'error' => 0,
+            'info' => '保存成功',
         ]);
     }
-
 
     public function setOnSale(Request $request, $id)
     {
@@ -314,18 +326,18 @@ class ShopProductsController extends CommonController
         $product->is_on_sale = $request->input('is_on_sale', 0);
         $product->save();
 
-        $on_sale = $request->input('is_on_sale') == 0 ? "下架" : "上架";
+        $on_sale = 0 == $request->input('is_on_sale') ? '下架' : '上架';
         $data = array(
             'type' => 'admin',
-            "log_info" => "设置产品:".$product->name.$on_sale
+            'log_info' => '设置产品:'.$product->name.$on_sale,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
+
         return response()->json([
-            "error" => 0,
-            "info" => "操作成功"
+            'error' => 0,
+            'info' => '操作成功',
         ]);
     }
-
 
     public function setRecommend(Request $request, $id)
     {
@@ -333,19 +345,18 @@ class ShopProductsController extends CommonController
         $product->is_recommend = $request->input('is_recommend', 0);
         $product->save();
 
-        $is_rec = $request->input('is_recommend') == 0 ? "不推荐" : "推荐";
+        $is_rec = 0 == $request->input('is_recommend') ? '不推荐' : '推荐';
         $data = array(
             'type' => 'admin',
-            "log_info" => "设置产品:".$product->name.$is_rec
+            'log_info' => '设置产品:'.$product->name.$is_rec,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "操作成功"
+            'error' => 0,
+            'info' => '操作成功',
         ]);
     }
-
 
     public function setSpecial(Request $request, $id)
     {
@@ -353,19 +364,18 @@ class ShopProductsController extends CommonController
         $product->is_special = $request->input('is_special', 0);
         $product->save();
 
-        $is_spec = $request->input('is_special') == 0 ? "取消特价" : "特价";
+        $is_spec = 0 == $request->input('is_special') ? '取消特价' : '特价';
         $data = array(
             'type' => 'admin',
-            "log_info" => "设置产品".$product->name.$is_spec
+            'log_info' => '设置产品'.$product->name.$is_spec,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "操作成功"
+            'error' => 0,
+            'info' => '操作成功',
         ]);
     }
-
 
     public function destroy($id)
     {
@@ -376,16 +386,15 @@ class ShopProductsController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "删除产品:".$product_name
+            'log_info' => '删除产品:'.$product_name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "删除成功"
+            'error' => 0,
+            'info' => '删除成功',
         ]);
     }
-
 
     public function restore($id)
     {
@@ -394,15 +403,15 @@ class ShopProductsController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "恢复删除产品:".$product->name
+            'log_info' => '恢复删除产品:'.$product->name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
+
         return response()->json([
-            "error" => 0,
-            "info" => "恢复成功"
+            'error' => 0,
+            'info' => '恢复成功',
         ]);
     }
-
 
     public function forceDelete($id)
     {
@@ -413,13 +422,13 @@ class ShopProductsController extends CommonController
 
         $data = array(
             'type' => 'admin',
-            "log_info" => "强制删除产品".$product_name
+            'log_info' => '强制删除产品'.$product_name,
         );
         \Event::fire(new \App\Events\OperateLogEvent($data));
 
         return response()->json([
-            "error" => 0,
-            "info" => "彻底删除成功"
+            'error' => 0,
+            'info' => '彻底删除成功',
         ]);
     }
 }

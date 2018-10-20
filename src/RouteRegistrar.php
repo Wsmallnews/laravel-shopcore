@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore;
 
 use Illuminate\Contracts\Routing\Registrar as Router;
@@ -16,8 +25,7 @@ class RouteRegistrar
     /**
      * Create a new route registrar instance.
      *
-     * @param  \Illuminate\Contracts\Routing\Registrar  $router
-     * @return void
+     * @param \Illuminate\Contracts\Routing\Registrar $router
      */
     public function __construct(Router $router)
     {
@@ -26,8 +34,6 @@ class RouteRegistrar
 
     /**
      * Register routes for transient tokens, clients, and personal access tokens.
-     *
-     * @return void
      */
     public function all()
     {
@@ -36,16 +42,14 @@ class RouteRegistrar
 
     /**
      * Register the routes shopcores.
-     *
-     * @return void
      */
     public function forShopRoutes()
     {
-        $this->router->group(['prefix' => 'smadmin', 'namespace' => 'Admin'], function($router){
+        $this->router->group(['prefix' => 'smadmin', 'namespace' => 'Admin'], function ($router) {
             // 产品分类
             $router->resource('shopProductCategorys', 'ShopProductCategorysController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                'names' => 'smadmin.shopProductCategorys'
+                'names' => 'smadmin.shopProductCategorys',
             ]);
 
             // 产品路由
@@ -56,11 +60,10 @@ class RouteRegistrar
             $router->patch('shopProducts/{shopProduct}/setSpecial', 'ShopProductsController@setSpecial')->name('smadmin.shopProducts.setSpecial');
             $router->patch('shopProducts/{shopProduct}/restore', 'ShopProductsController@restore')->name('smadmin.shopProducts.restore');
             $router->delete('shopProducts/{shopProduct}/forceDelete', 'ShopProductsController@forceDelete')->name('smadmin.shopProducts.forceDelete');
-            $router->resource("shopProducts", 'ShopProductsController', [
+            $router->resource('shopProducts', 'ShopProductsController', [
                 'only' => ['index', 'show', 'store', 'update', 'destroy'],
-                "names" => "smadmin.shopProducts"
+                'names' => 'smadmin.shopProducts',
             ]);
         });
     }
-
 }
