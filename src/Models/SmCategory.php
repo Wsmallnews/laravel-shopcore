@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -8,31 +17,37 @@ use Kalnoy\Nestedset\NodeTrait;
 class SmCategory extends Model
 {
     use NodeTrait;
+
     protected $table = 'sm_categorys';
 
     protected $appends = [
-        'value', 'label', 'expand', 'parent_ids'
+        'value', 'label', 'expand', 'parent_ids',
     ];
 
     /**********访问器开始***********/
     // cascader
-    public function getLabelAttribute(){
+    public function getLabelAttribute()
+    {
         return $this->name;
     }
 
-    public function getValueAttribute(){
+    public function getValueAttribute()
+    {
         return strval($this->id);
     }
 
-    public function getExpandAttribute(){
+    public function getExpandAttribute()
+    {
         return true;
     }
 
-    public function getParentIdsAttribute() {
+    public function getParentIdsAttribute()
+    {
         $parent_ids = $this->ancestorsOf($this->id)->pluck('id');
         foreach ($parent_ids as $k => $v) {
             $parent_ids[$k] = strval($v);
         }
+
         return $parent_ids;
     }
 
@@ -40,17 +55,20 @@ class SmCategory extends Model
 
     /* =======================模型关联=======================*/
     //关联类别表
-    public function parent(){
+    public function parent()
+    {
         return $this->belongsTo('App\Models\ShopProductCategory', 'parent_id');
     }
 
     //关联类别表
-    public function children(){
+    public function children()
+    {
         return $this->hasMany('App\Models\ShopProductCategory', 'parent_id');
     }
 
     //关联类别表
-    public function product(){
+    public function product()
+    {
         return $this->hasMany('App\Models\ShopProduct', 'category_id');
     }
 

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the smallnews/laravel-shopcore.
+ *
+ * (c) smallnews <1371606921@qq.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Wsmallnews\Shopcore\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,16 +22,16 @@ class SmProduct extends Model
     protected $appends = [
         'cart_num', 'type_name', 'images_arr', 'image', 'content_arr',
         'special_name', 'recommend_name', 'check_status_name',
-        'category_id_arr'
+        'category_id_arr',
     ];
 
-
     /**********通用模型操作方法***********/
-    public function getSpecName($product) {
+    public function getSpecName($product)
+    {
         $spec_name = [
-            [ 'spec_name' => '', 'item' => [] ],
-            [ 'spec_name' => '', 'item' => [] ],
-            [ 'spec_name' => '', 'item' => [] ]
+            ['spec_name' => '', 'item' => []],
+            ['spec_name' => '', 'item' => []],
+            ['spec_name' => '', 'item' => []],
         ];
 
         if (!$product->specItem->isEmpty()) {
@@ -30,34 +39,36 @@ class SmProduct extends Model
 
             $spec_name[0]['spec_name'] = $product->spec_name_one;
             foreach ($specItem->groupBy('spec_name_one') as $key => $value) {
-                if ($key != '') {
+                if ('' != $key) {
                     $spec_name[0]['item'][] = $key;
                 }
             }
 
             $spec_name[1]['spec_name'] = $product->spec_name_two;
             foreach ($specItem->groupBy('spec_name_two') as $key => $value) {
-                if ($key != '') {
+                if ('' != $key) {
                     $spec_name[1]['item'][] = $key;
                 }
             }
 
             $spec_name[2]['spec_name'] = $product->spec_name_three;
             foreach ($specItem->groupBy('spec_name_three') as $key => $value) {
-                if ($key != '') {
+                if ('' != $key) {
                     $spec_name[2]['item'][] = $key;
                 }
             }
         }
+
         return $spec_name;
     }
-    /**********通用模型操作方法***********/
 
+    /**********通用模型操作方法***********/
 
     /**********访问器开始***********/
 
     // 产品被加入购物车数量
-    public function getCartNumAttribute(){
+    public function getCartNumAttribute()
+    {
         $cart_num = 0;
         if (!empty($this->cart)) {     //
             $cart_num = $this->cart->product_num;
@@ -66,41 +77,44 @@ class SmProduct extends Model
         return $cart_num;
     }
 
-
     // 产品类型
-    public function getTypeNameAttribute(){
+    public function getTypeNameAttribute()
+    {
         switch ($this->type) {
-            case 'show' :
-                $type_name = "普通";
+            case 'show':
+                $type_name = '普通';
+
                 break;
             default:
-                $type_name = "普通";
+                $type_name = '普通';
         }
 
         return $type_name;
     }
 
-
-    public function getImageAttribute(){
-        $images_arr = empty($this->images) ? [] : json_decode($this->images, true) ;
+    public function getImageAttribute()
+    {
+        $images_arr = empty($this->images) ? [] : json_decode($this->images, true);
 
         return !empty($images_arr) ? $images_arr[0] : '';
     }
 
-    public function getImagesArrAttribute(){
-        $images_arr = empty($this->images) ? [] : json_decode($this->images, true) ;
+    public function getImagesArrAttribute()
+    {
+        $images_arr = empty($this->images) ? [] : json_decode($this->images, true);
 
         return $images_arr;
     }
 
-    public function getContentArrAttribute(){
-        $content_arr = empty($this->content) ? [] : json_decode($this->content, true) ;
+    public function getContentArrAttribute()
+    {
+        $content_arr = empty($this->content) ? [] : json_decode($this->content, true);
 
         return $content_arr;
     }
 
-
-    public function getCategoryIdArrAttribute(){
+    public function getCategoryIdArrAttribute()
+    {
         $cagetory_ids = [];
         if ($this->category_id) {
             if (isset($this->category) && !is_null($this->category)) {
@@ -119,65 +133,79 @@ class SmProduct extends Model
     }
 
     // 产品审核状态
-    public function getCheckStatusNameAttribute(){
+    public function getCheckStatusNameAttribute()
+    {
         switch ($this->check_status) {
             case -1:
                 $status_name = '已驳回';
+
                 break;
             case 1:
                 $status_name = '已通过';
+
                 break;
             case '0':
                 $status_name = '待审核';
+
                 break;
             default:
                 $status_name = '';
+
                 break;
         }
+
         return $status_name;
     }
 
-    public function getSpecialNameAttribute() {
-        return $this->is_special ? "特价" : "";
+    public function getSpecialNameAttribute()
+    {
+        return $this->is_special ? '特价' : '';
     }
 
-    public function getRecommendNameAttribute() {
-        return $this->is_recommend ? "推荐" : "";
+    public function getRecommendNameAttribute()
+    {
+        return $this->is_recommend ? '推荐' : '';
     }
 
-    public function getOriginPriceAttribute($value) {
-        return floatVal($value);
+    public function getOriginPriceAttribute($value)
+    {
+        return floatval($value);
     }
 
-    public function getPriceAttribute($value) {
-        return floatVal($value);
+    public function getPriceAttribute($value)
+    {
+        return floatval($value);
     }
 
     /**********访问器结束***********/
 
-
     /**********模型关联***********/
-    public function category() {
-        return $this->belongsTo('Wsmallnews\Shopcore\Models\SmCategory', "category_id");
+    public function category()
+    {
+        return $this->belongsTo('Wsmallnews\Shopcore\Models\SmCategory', 'category_id');
     }
 
     // 关联规格
-    public function specItem() {
+    public function specItem()
+    {
         return $this->hasMany('Wsmallnews\Shopcore\Models\SmProductSpec', 'product_id');
     }
 
     // 关联属性
-    public function productAttr() {
+    public function productAttr()
+    {
         return $this->hasMany('Wsmallnews\Shopcore\Models\SmProductAttr', 'product_id');
     }
 
     // 关联收藏
-    public function collection() {
+    public function collection()
+    {
         return $this->hasOne('Wsmallnews\Shopcore\Models\Collection', 'item_id');
     }
+
     //=====================模型关联结束=========================//
 
-    /**
+    /*
      * 商品详情进入确认订单获取产品信息
      * @param  string $product_id      [description]
      * @param  string $spec_name_one   [description]
@@ -238,6 +266,4 @@ class SmProduct extends Model
     //         }
     //     }
     // }
-
-
 }
